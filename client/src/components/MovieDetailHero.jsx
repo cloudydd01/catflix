@@ -1,11 +1,9 @@
 /* eslint-disable react/prop-types */
-// import React from 'react'
 import { AnimatePresence, motion } from "framer-motion";
-
-import VideoPlayer from "./VideoPlayer";
-import Loader from "./UI/Loader";
 import { useState } from "react";
 import HeroInfo from "./HeroInfo";
+import VideoModal from "./VideoModal";
+import NetflixPlayer from "./NetflixPlayer";
 
 const MovieDetailHero = ({
   playing,
@@ -18,10 +16,19 @@ const MovieDetailHero = ({
   movieType,
   movie,
   src,
-  bg
+  bg,
 }) => {
   const [loaded, setLoaded] = useState(false);
   const [title, setTitle] = useState();
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [videoSources, setVideoSources] = useState([]);
+  const [subtitles, setSubtitles] = useState([]);
+
+  const handlePlayClick = (movie) => {
+    setVideoSources(movie.videoSources);
+    setSubtitles(movie.subtitles);
+    setShowVideoModal(true);
+  };
 
   return (
     <div className="relative h-[30vh] lg:h-[50vh] w-full md:h-[40vh] lg:h-[50vh] overflow-hidden ">
@@ -39,7 +46,7 @@ const MovieDetailHero = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 1, ease: "linear" }}
             className="absolute top-0 left-0 z-10 w-full h-full overflow-hidden"
-            onClick={() => setPlaying(true)}
+            onClick={() => handlePlayClick(movie)} // 修改点击事件
           >
             <picture>
               <source
@@ -73,15 +80,9 @@ const MovieDetailHero = ({
         />
       }
 
-      <VideoPlayer
-        volume={volume}
-        playing={playing}
-        setPlaying={setPlaying}
-        playerRef={playerRef}
-        id={id}
-        movieType={movieType}
-        setTitle={setTitle}
-      />
+      <VideoModal isOpen={showVideoModal} onClose={() => setShowVideoModal(false)}>
+        <NetflixPlayer videoSources={videoSources} subtitles={subtitles} />
+      </VideoModal>
     </div>
   );
 };
